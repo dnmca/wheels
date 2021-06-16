@@ -1,4 +1,6 @@
 
+from typing import List
+from random import randint
 
 class ListNode:
     def __init__(self, val=0, next=None):
@@ -352,3 +354,115 @@ def delete_duplicates(head: ListNode) -> ListNode:
         else:
             copy = copy.next
     return head
+
+
+def append(list1: ListNode, list2: ListNode):
+    """Append list2 to the end of list1"""
+    while list1.next:
+        list1 = list1.next
+    list1.next = list2
+
+
+def merge_in_between(list1: ListNode, a: int, b: int, list2: ListNode) -> ListNode:
+    """
+    LeetCode - 1669
+    """
+    copy = list1
+    index = 0
+    start, end = None, None
+
+    while copy:
+        if index == a - 1:
+            start = copy
+        elif index == b:
+            end = copy
+            break
+        copy = copy.next
+        index += 1
+
+    append(list2, end.next)
+    start.next = list2
+    return list1
+
+
+def swap_nodes(head: ListNode, k: int) -> ListNode:
+    """
+    LeetCode - 1721
+
+    You are given the head of a linked list, and an integer k.
+
+    Return the head of the linked list after swapping the values of the
+    kth node from the beginning and the kth node from the end (the list is 1-indexed).
+    """
+    length = get_length(head)
+    copy = head
+    first, second = None, None
+
+    for i in range(1, length + 1):
+        if i == k:
+            first = copy
+        if i == length + 1 - k:
+            second = copy
+        copy = copy.next
+
+    first.val, second.val = second.val, first.val
+    return head
+
+
+def swap_nodes_bp(head: ListNode, k: int) -> ListNode:
+    """
+    LeetCode - 1721
+
+    Leveraging a moving window of size len(head) - k
+    """
+    n1, n2, p = None, None, head
+    while p is not None:
+
+        k -= 1
+        n2 = None if n2 is None else n2.next
+        if k == 0:
+            # start iterating n2 only when k-th node is reached
+            n1 = p
+            n2 = head
+        p = p.next
+
+    n1.val, n2.val = n2.val, n1.val
+    return head
+
+
+def get_random(head: ListNode) -> int:
+    """
+    LeetCode - 382
+
+    Given a singly linked list,
+    return a random node's value from the linked list.
+    Each node must have the same probability of being chosen.
+
+    Good solution when list has static size
+    """
+    length = get_length(head)
+    index = randint(0, length - 1)
+    copy = head
+    counter = 0
+
+    while copy:
+        if counter == index:
+            return copy.val
+        copy = copy.next
+        counter += 1
+
+
+def get_random_bp(head: ListNode) -> int:
+    """
+    LeetCode - 382
+
+    Reservoir Sampling approach - for infinite sequences or dynamically changing sizes
+    """
+    result, node, index = head, head.next, 1
+
+    while node:
+        if randint(0, index) is 0:
+            result = node
+        node = node.next
+        index += 1
+    return result.val
