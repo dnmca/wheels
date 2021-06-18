@@ -466,3 +466,90 @@ def get_random_bp(head: ListNode) -> int:
         node = node.next
         index += 1
     return result.val
+
+
+def num_components(head: ListNode, nums: List[int]) -> int:
+    """
+    LeetCode - 817
+    """
+    counter = 0
+    in_component = False
+
+    while head:
+        if head.val in nums:
+            if not in_component:
+                in_component = True
+        else:
+            if in_component:
+                counter += 1
+                in_component = False
+        head = head.next
+
+    if in_component:
+        counter += 1
+
+    return counter
+
+
+def odd_even_list(head: ListNode) -> ListNode:
+    """
+    LeetCode - 328
+
+    Given the head of a singly linked list, group all the nodes with odd
+    indices together followed by the nodes with even indices, and return the reordered list.
+
+    The first node is considered odd, and the second node is even, and so on.
+
+    You must solve the problem in O(1) extra space complexity and O(n) time complexity.
+    """
+    odd = None
+    even = None
+    counter = 1
+
+    while head:
+
+        if counter % 2 == 1:
+            if odd is None:
+                odd_iter = ListNode(head.val)
+                odd = odd_iter
+            else:
+                odd_iter.next = ListNode(head.val)
+                odd_iter = odd_iter.next
+
+        else:
+            if even is None:
+                even_iter = ListNode(head.val)
+                even = even_iter
+            else:
+                even_iter.next = ListNode(head.val)
+                even_iter = even_iter.next
+
+        counter += 1
+        head = head.next
+
+    if odd is None:
+        return even
+    if even is None:
+        return odd
+
+    append(odd, even)
+    return odd
+
+
+def odd_even_list_bp(head: ListNode) -> ListNode:
+    """
+    LeetCode - 328
+    Satisfies O(1) space complexity condition
+    """
+    if head:
+        odd = head
+        even = head.next
+        eHead = even
+
+        while even and even.next:
+            odd.next = odd.next.next
+            even.next = even.next.next
+            odd = odd.next
+            even = even.next
+        odd.next = eHead
+    return head
