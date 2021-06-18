@@ -1,4 +1,6 @@
 
+import math
+
 from typing import List
 from random import randint
 
@@ -552,4 +554,138 @@ def odd_even_list_bp(head: ListNode) -> ListNode:
             odd = odd.next
             even = even.next
         odd.next = eHead
+    return head
+
+
+def split_list_to_parts(head: ListNode, k: int) -> List[ListNode]:
+    """
+    LeetCode - 725
+
+    Given the head of a singly linked list and an integer k,
+    split the linked list into k consecutive linked list parts.
+
+    The length of each part should be as equal as possible:
+    no two parts should have a size differing by more than one.
+    This may lead to some parts being null.
+
+    The parts should be in the order of occurrence in the input list,
+    and parts occurring earlier should always have a size greater
+    than or equal to parts occurring later.
+
+    Return an array of the k parts.
+    """
+
+    results: List[ListNode] = []
+
+    length = get_length(head)
+
+    initial_size = math.ceil(length / k)
+    counter = size = initial_size
+
+    start = head
+    end = None
+
+    while head:
+        if counter == 0:
+            end.next = None
+            results.append(start)
+            length -= size
+
+            if initial_size == 1:
+                size = initial_size
+            else:
+                if length / (k - len(results)) <= initial_size - 1:
+                    size = initial_size - 1
+                else:
+                    size = initial_size
+
+            counter = size
+            start = head
+        if counter == 1:
+            end = head
+        head = head.next
+        counter -= 1
+
+    results.append(start)
+
+    for _ in range(k - len(results)):
+        results.append(None)
+
+    return results
+
+
+def add_two_numbers(l1: ListNode, l2: ListNode) -> ListNode:
+    """
+    LeetCode - 2
+
+    You are given two non-empty linked lists representing two non-negative integers.
+    The digits are stored in reverse order, and each of their nodes contains a single
+    digit. Add the two numbers and return the sum as a linked list.
+    """
+    res = curr = ListNode(-1)
+
+    carry = 0
+
+    while l1 or l2:
+
+        first, second = 0, 0
+
+        if l1 and l2:
+            first, second = l1.val, l2.val
+            l1 = l1.next
+            l2 = l2.next
+        elif l1:
+            first = l1.val
+            l1 = l1.next
+        elif l2:
+            second = l2.val
+            l2 = l2.next
+
+        total = first + second + carry
+
+        if total > 9:
+            carry = int(str(total)[0])
+            total = int(str(total)[1])
+        else:
+            carry = 0
+
+        curr.next = ListNode(total)
+        curr = curr.next
+
+    if carry != 0:
+        curr.next = ListNode(carry)
+
+    return res.next
+
+
+def remove_nth_from_end(head: ListNode, n: int) -> ListNode:
+    """
+    LeetCode - 19
+
+    Given the head of a linked list, remove the nth
+    node from the end of the list and return its head.
+    """
+    if not head.next:
+        return None
+
+    dummy = ListNode(-1, head)
+
+    first = second = dummy
+
+    if n == 1:
+        while first.next.next:
+            first = first.next
+        first.next = None
+        return head
+
+    for _ in range(n):
+        first = first.next
+
+    while first:
+        first = first.next
+        second = second.next
+
+    second.val = second.next.val
+    second.next = second.next.next
+
     return head
